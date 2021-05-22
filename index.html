@@ -1,0 +1,368 @@
+<!Doctype HTML>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Tax Calculator</title>
+<div class='hd'>
+<h2>Income-Tax Calculator</h2>
+<h3>For Salaried Tax-Payers of India</h3>
+</div>
+<style>
+	body,head {	font-family:-apple-system, BlinkMacSystemFont, sans-serif;	}
+	body input[type='text']	{	border-radius:5px; border: 2px solid;	}
+	div.hd{
+		position:static;
+		text-align:center;
+		width:100%;
+		height:10%;
+		padding: 5px 0 5px 0;
+		background-color:#000000;
+		color:white;
+		margin:auto;
+		margin-bottom:1%;
+		border:1px solid;
+	}
+	div.ip{
+		width:53%;
+		height:65%;
+		margin:1%;
+		float:left;
+	}
+	div.op2{
+		display:inline-block;
+		width:40%;
+		height:250px;
+		margin-top:50%;
+		margin-bottom:1%;
+		padding:1% 0 0 0;
+	}
+	div.op1{
+		display:inline-block;
+		width:40%;
+		height:25%;
+	}
+	.fieldname{
+		width: auto;
+		font-weight:bold;
+	}
+	.fieldbox{
+		width:90%;
+		height:30px;
+		text-align:center;
+		font-size:21px;
+	}
+	.res{
+		display:inline-block;
+		width:98%;
+		height:30px;
+		text-align:center;
+		font-size:20px;
+		border:2px solid inset;
+	}
+	.resbutton{
+		display:inline-block;
+		background-color:#000000;
+		color:white;
+		width:100%;
+		height:40px;
+		text-align:center;
+		font-size:100%;
+		border-radius:6px;
+	}
+	#tax_tab{
+		width:100%;
+		height:100%;
+		border-collapse:collapse;
+		border-color:#000000;
+	}
+	#tax_tab td:nth-child(even){	text-align:center;	}
+	#tax_tab td:nth-child(odd){	text-align:left;width:80%; padding:3px; 	}
+	#tax_tab tr{	background-color:#000000; color:white;	border-color:#000000;	}
+	#tax_tab th, #tax_tab td{ padding:3px;	}
+	#tax_tab th{	background-color:#000000;	color:white; 	}
+	#tax_tab tr:hover, #tax_tab tr:focus {	background-color:white; color:#000000;	}
+	
+	.fieldbox:hover {	border-color:grey; border-style:outset;	}
+	.resbutton:hover {	font-weight:bold;	}
+	.fieldsetline	{	border:0px solid;	border-radius:10px; }
+	input[type="radio"]	{	display:none; position:fixed;	}
+	.ipradio label	{ display:inline-block;	margin:5px;	width:auto;	text-align:left;	padding:4px 4px 5px 5px;	color:black;	border:2px solid; border-color:#000000;	border-radius:5px; }
+	input[type='radio']:checked + label,input[type='radio']:hover + label{
+		background-color:#000000;	padding:4px 4px 5px 5px;	color:white;	border:2px solid; border-color:#000000;
+	}
+	
+	@media screen and (max-width:800px){
+		.fieldsetline	{	border:none;	}
+		div.ip{
+			display:block;	width:100%; height:50%; float:center; margin:auto; text-align:center;
+		}
+		div.op1{
+			display:block;	width:100%;	height:20%; float:center; margin:auto; margin-top: 2%;
+		}		
+		div.op2{
+			display:block;	width:100%;	height:30%; float:center; margin:auto; margin-top: 2%;
+		}
+		.fieldname  { width:auto;	text-align:center;	margin-bottom:1px; }
+		.fieldbox  { width:97%; height:30px; float:center; margin-bottom:1px;  }
+		.resbutton{
+			display:block;	width:97%; height:40px; margin-bottom:2%; margin:auto;
+		}
+		.res{
+			display:block;	width:97%; height:30px; margin:auto;
+		}	
+	}
+</style>
+<script>	
+	function validate_input(num_in,field_in)
+	{
+		var valid=0;
+			if(isFinite(num_in)==false)
+			{	
+				document.getElementById(field_in).value=0;
+				window.alert('Enter valid digits in amount fields');
+			}
+			else if(num_in<0 && field_in!='other')
+			{
+				document.getElementById(field_in).value=0;
+				window.alert('Enter positive values only in amount fields');
+			}
+			else valid=num_in;
+		return valid;
+	}
+	function calculate_HRA(rent,hra,GBP,rentCity)
+	{
+		var rentA=(rentCity=='Others')?0.4*GBP:0.5*GBP;
+		var rentB=rent-(0.1*GBP);
+		var rentC=hra;
+		var res=(rentA<rentB && rentA<rentC)?rentA:((rentB<rentC)?rentB:rentC);
+		return res;
+	}
+	function calculate_taxslab(netPay)
+	{
+
+		var tax=0.00;
+		if(netPay>=500001)
+		{
+			if(netPay-1000000>0)
+			{
+				tax=0.30*(netPay-1000000);netPay=netPay-(netPay-1000000);
+			}
+			if(netPay-500000>0)
+			{
+				tax+=0.20*(netPay-500000);netPay=netPay-(netPay-500000); 
+			}
+			if(netPay-250000>0)
+			{
+				tax+=0.05*(netPay-250000);
+			}
+		}
+		else
+		{
+			tax=0.00;
+		}
+		return tax;
+	}
+	function calculate_SD(GS)
+	{
+		var SD=0.00;
+		if(GS>500000) { SD=20000+30000; }
+		if(GS>=75000 && GS<=500000) { SD=(GS*0.4)<30000?(GS*0.4):30000; }
+		return SD;
+	}
+	function openlinkedin()
+	{
+		window.open("https://www.linkedin.com/feed/","_blank");
+	}
+	function calculate_tax()
+	{
+		var res=0.00;
+		var netPay=0.00;
+		var tax_steps=[];
+			
+		var getGS=document.getElementById('GS').value;
+		var GS=getGS || 0;
+		try{GS=Number(eval(GS)); } catch(err){ GS=validate_input(GS,'GS'); } 
+		GS=(document.getElementById('GS_M').checked)?(GS*12):GS;
+		GS=validate_input(GS,'GS');
+		
+		var getGBP=document.getElementById('GBP').value;
+		var GBP=getGBP || 0;
+		try{ GBP=Number(eval(GBP)); } catch(err){ GBP=validate_input(GBP,'GBP'); } 
+		GBP=(document.getElementById('GBP_M').checked)?(GBP*12):GBP;
+		GBP=validate_input(GBP,'GBP');
+		
+		var getRent=document.getElementById('rent').value;
+		var rent=getRent || 0;
+		try{ rent=Number(eval(rent)); } catch(err){ rent=validate_input(rent,'rent'); } 
+		rent=(document.getElementById('rent_M').checked)?(rent*12):rent;
+		rent=validate_input(rent,'rent');
+		
+		var getHra=document.getElementById('hra').value;
+		var hra=getHra || 0;
+		try{ hra=Number(eval(hra)); } catch(err){ hra=validate_input(hra,'hra'); }
+		hra=(document.getElementById('hra_M').checked)?(hra*12):hra;
+		hra=validate_input(hra,'hra');
+		
+		var getCity=document.getElementById('Chennai').value || document.getElementById('Delhi').value || document.getElementById('Mumbai').value || document.getElementById('Others').value;
+		var rentCity=String(rentCity);
+		
+		var getLTA=document.getElementById('LTA').value;
+		var LTA=getLTA || 0;
+		try{ LTA=Number(eval(LTA)); } catch(err){ LTA=validate_input(LTA,'LTA'); } 
+		LTA=validate_input(LTA,'LTA');
+		
+		var getPT=document.getElementById('PT').value;
+		var PT=getPT || (GS==0)?0:eval(200*12);
+		try{ PT=Number(eval(PT)); } catch(err){ PT=validate_input(PT,'PT'); }
+		PT=(document.getElementById('PT_M').checked)?(PT*12):PT;
+		PT=validate_input(PT,'PT');
+		 
+		var getOther=document.getElementById('other').value;
+		var other=getOther || 0;
+		other=(other>0)?-1*other:other;
+		try{ other=Number(eval(other)); } catch(err){ other=validate_input(other,'other'); } 
+		other=validate_input(other,'other');
+		
+		var get80C=document.getElementById('80C').value;
+		var s80C=get80C || 0;
+		try{ s80C=Number(eval(s80C)); } catch(err){ s80C=validate_input(s80C,'s80C'); } 
+		s80C=validate_input(s80C,'s80C');
+		s80C=(s80C>=150000)?150000:s80C;
+		
+		var get6A=document.getElementById('6A').value;
+		var s6A=(get6A=='')?0:get6A;
+		try{ s6A=Number(eval(s6A)); } catch(err){ get6A=validate_input(get6A,'get6A'); } 
+		get6A=validate_input(get6A,'get6A');
+
+		tax_steps[0]= GS;                                   	
+		tax_steps[1]= calculate_HRA(rent,hra,GBP,rentCity); 	
+		tax_steps[2]= LTA;                                  	
+		tax_steps[3]= calculate_SD(GS)+PT;                  	
+		tax_steps[4]= other;                                	
+		tax_steps[5]= s80C;                                 	
+		tax_steps[6]= s6A;                                  	
+		
+		netPay=tax_steps[0]-tax_steps[1]-tax_steps[2]-tax_steps[3]-tax_steps[4]-tax_steps[5]-tax_steps[6];
+		res=calculate_taxslab(netPay);
+														
+		console.log('Gross salary: '+tax_steps[0]);
+		console.log('HRA Exemption: '+tax_steps[1]);
+		console.log('LTA Exemption: '+tax_steps[2]);
+		console.log('Standard Deduction: '+tax_steps[3]);
+		console.log('Income from other sources (House Loan interest): '+tax_steps[4]);
+		console.log('Section 80C and 80CCC: '+tax_steps[5]);
+		console.log('Section 6A outside 80C and 80CCC: '+tax_steps[6]);
+		console.log('Net Annual Pay after deductions: '+netPay);
+		console.log('__________________________________________');
+													
+		document.getElementById('res').value=res;
+		
+		document.getElementById('tax_tab').style.visibility='visible';
+		//document.getElementById('hide').id='tax_tab';
+		
+		var tab_tr=document.getElementById('tax_tab').getElementsByTagName('tr');
+		tab_tr[0].getElementsByTagName('th')[0].innerHTML='Details';	tab_tr[0].getElementsByTagName('th')[1].innerHTML='Amount';
+		tab_tr[1].getElementsByTagName('td')[0].innerHTML='Gross Salary';	tab_tr[1].getElementsByTagName('td')[1].innerHTML=tax_steps[0];
+		tab_tr[2].getElementsByTagName('td')[0].innerHTML='HRA Exemption';	tab_tr[2].getElementsByTagName('td')[1].innerHTML=tax_steps[1];
+		tab_tr[3].getElementsByTagName('td')[0].innerHTML='LTA Exemption';	tab_tr[3].getElementsByTagName('td')[1].innerHTML=tax_steps[2];
+		tab_tr[4].getElementsByTagName('td')[0].innerHTML='Standard Deduction';	tab_tr[4].getElementsByTagName('td')[1].innerHTML=tax_steps[3];
+		tab_tr[5].getElementsByTagName('td')[0].innerHTML='Income from other sources (Includes interest paid on House Loan)';		tab_tr[5].getElementsByTagName('td')[1].innerHTML=tax_steps[4];
+		tab_tr[6].getElementsByTagName('td')[0].innerHTML='Section 80C and 80CCC';	tab_tr[6].getElementsByTagName('td')[1].innerHTML=tax_steps[5];
+		tab_tr[7].getElementsByTagName('td')[0].innerHTML='Section VI-A other than 80C, 80CCC';	tab_tr[7].getElementsByTagName('td')[1].innerHTML=tax_steps[6];
+		tab_tr[8].getElementsByTagName('td')[0].innerHTML='Net Annual Pay after deductions';	tab_tr[8].getElementsByTagName('td')[1].innerHTML=netPay;
+		tab_tr[9].getElementsByTagName('td')[0].innerHTML='Total Tax Payable for the Financial Year';	tab_tr[9].getElementsByTagName('td')[1].innerHTML=res;
+	}
+</script>
+</head>
+<body>
+		<div class='ip'>
+		<fieldset class='fieldsetline'>
+		<legend class='fieldname'>Gross Salary <br><small>Income under the head salary</small></legend>
+		<div class='ipradio'>	<input type='radio' name='GS_period' id='GS_A'/>	<label for='GS_A'>	Annual	</label>
+								<input type='radio' name='GS_period' id='GS_M'/>	<label for='GS_M'>	Monthly	</label>
+		</div>
+		<input type='text' id='GS' class='fieldbox'>
+		</fieldset><p/>
+		
+		<fieldset class='fieldsetline'>
+		<legend class='fieldname'>Basic Pay </legend>
+		<div class='ipradio'>	<input type='radio' name='GBP_period' id='GBP_A'/>	<label for='GBP_A'>	Annual	</label>
+								<input type='radio' name='GBP_period' id='GBP_M'/>	<label for='GBP_M'>	Monthly	</label>
+		</div>
+		<input type='text' id='GBP' class='fieldbox'><p/>
+		</fieldset></p>
+		
+		<fieldset class='fieldsetline'>
+		<legend class='fieldname'>House Rent paid</legend>
+		<div class='ipradio'>	<input type='radio' name='Rent_period' id='rent_A'/>	<label for='rent_A'>	Annual	</label>
+								<input type='radio' name='Rent_period' id='rent_M'/>	<label for='rent_M'>	Monthly	</label>
+		</div>
+		<input type='text' id='rent' class='fieldbox'>
+		</fieldset></p>
+		
+		<fieldset class='fieldsetline'>
+		<legend class='fieldname'>Annual HRA offered by employer</legend>
+		<div class='ipradio'>	<input type='radio' name='HRA_period' id='hra_A'/>		<label for='hra_A'>		Annual	</label>
+								<input type='radio' name='HRA_period' id='hra_M'/>		<label for='hra_M'>		Monthly	</label>
+		</div>
+		<input type='text' id='hra' class='fieldbox'><p/>
+		</fieldset>
+		
+		<fieldset class='fieldsetline'>
+		<legend class='fieldname'>City of Residence</legend>		
+		<div class='ipradio'>
+		<input type='radio' name='city' id='Chennai'/>	<label for='Chennai'>	Chennai	</label>
+		<input type='radio' name='city' id='Delhi'/>	<label for='Delhi'>		Delhi	</label>
+		<input type='radio' name='city' id='Mumbai'/>	<label for='Mumbai'>	Mumbai	</label>
+		<input type='radio' name='city' id='Kolkata'/>	<label for='Kolkata'>	Kolkata	</label>
+		<input type='radio' name='city' id='Others'/>	<label for='Others'>	Others	</label>
+		</div>
+		</fieldset>
+		
+		<fieldset class='fieldsetline'>
+		<legend class='fieldname'>LTA Exemption</legend>
+		<input type='text' id='LTA' class='fieldbox'><p/>
+		</fieldset>
+		
+		<fieldset class='fieldsetline'>
+		<legend class='fieldname'>Professional-Tax (PT) to State Govt.</legend>
+		<div class='ipradio'>	<input type='radio' name='PT_period' id='PT_A'/>	<label for='PT_A'>	Annual	</label>
+								<input type='radio' name='PT_period' id='PT_M'/>	<label for='PT_M'>	Monthly	</label>
+		</div>
+		<input type='text' id='PT' class='fieldbox'><p/>
+		</fieldset>
+		
+		<fieldset class='fieldsetline'>
+		<legend class='fieldname'>Other incomes <br><small>Includes interest paid on House Loan</small></legend><input type='text' id='other' class='fieldbox'><p/>
+		</fieldset>
+		
+		<fieldset class='fieldsetline'>
+		<legend class='fieldname'>Investments under Section 80C<br><small>FixedDeposit	MutualFund	NSC	PPF	NPS(1a)</small></legend><input type='text' id='80C' class='fieldbox'><p/>
+		</fieldset>
+		
+		<fieldset class='fieldsetline'>
+		<legend class='fieldname'>Investments under Section 6A<br><small>other then 80C, 80CCC</small></legend><input type='text' id='6A' class='fieldbox'>
+		</fieldset>
+		
+	</div>
+	<div class='op2'>
+		<table id='tax_tab' style='visibility:hidden;'>
+			<tr>	<th id='tr_0_0'>	</th>	<th id='tr_0_1'>	</th>	</tr>
+			<tr>	<td id='tr_1_0'>	</td>	<td id='tr_1_1'>	</td>	</tr>
+			<tr>	<td id='tr_2_0'>	</td>	<td id='tr_2_1'>	</td>	</tr>
+			<tr>	<td id='tr_3_0'>	</td>	<td id='tr_3_1'>	</td>	</tr>
+			<tr>	<td id='tr_4_0'>	</td>	<td id='tr_4_1'>	</td>	</tr>
+			<tr>	<td id='tr_5_0'>	</td>	<td id='tr_5_1'>	</td>	</tr>
+			<tr>	<td id='tr_6_0'>	</td>	<td id='tr_6_1'>	</td>	</tr>
+			<tr>	<td id='tr_7_0'>	</td>	<td id='tr_7_1'>	</td>	</tr>
+			<tr>	<td id='tr_8_0'>	</td>	<td id='tr_8_1'>	</td>	</tr>
+			<tr>	<td id='tr_9_0'>	</td>	<td id='tr_9_1'>	</td>	</tr>
+		</table>
+	</div>
+	<div class='op1'>
+		<input type='button' value='Calculate Tax Payable' class='resbutton' id='calc' onclick='calculate_tax()'>
+		</p><input type='text' id='res' class='res'>
+	</div>
+</body>
+</body>
+</html>
