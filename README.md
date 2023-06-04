@@ -1,8 +1,12 @@
 # Income Tax Calculator-For India Salaried 
 
-## Details
+## Context
+This is a self-learning project by a beginner dev.
+
+## Specifications
 <ul>
-  <li>Income Tax Calulator using basic JS and CSS.</li>
+  <li>Page is developed using HTML, CSS and simple Javascript.</li>
+  <li>This Page is adaptive can be optimized for viewing on Desktops, tablets and standard smartphone resolutions.
   <li>This can used by Salaried Indian tax payers to decide which tax policy (New or Old) is suitable for the Financial year.</<li>
 </ul>
     
