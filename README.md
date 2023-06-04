@@ -3,7 +3,7 @@
 ## Details
 <ul>
   <li>Income Tax Calulator using basic JS and CSS.</li>
-  <li>This can used by Salaried Indian tax payers to decide which tax policy (New or Old) is suitable for the Financial year.</<li>>
+  <li>This can used by Salaried Indian tax payers to decide which tax policy (New or Old) is suitable for the Financial year.</<li>
 </ul>
     
 ## Important
